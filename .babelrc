@@ -1,0 +1,27 @@
+{
+  "env": {
+    "production": {
+      "plugins": [
+        [
+          "emotion",
+          {
+            "hoist": true
+          }
+        ],
+        "lodash"
+      ]
+    },
+    "development": {
+      "plugins": [
+        [
+          "emotion",
+          {
+            "sourceMap": true,
+            "autoLabel": true
+          }
+        ],
+        "lodash"
+      ]
+    }
+  }
+}
