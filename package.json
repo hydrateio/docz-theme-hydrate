@@ -1,7 +1,7 @@
 {
-  "name": "docz-theme-refinitiv",
+  "name": "docz-theme-hydrate",
   "version": "1.0.0",
-  "description": "The default theme of docz",
+  "description": "Hydrate theme for docz",
   "license": "MIT",
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",
@@ -18,7 +18,8 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.{ts,tsx}\" --write",
     "fix:tslint": "tslint --fix --project .",
-    "tslint": "tslint --project ."
+    "tslint": "tslint --project .",
+    "test": "exit 0"
   },
   "dependencies": {
     "array-sort": "^1.0.0",
