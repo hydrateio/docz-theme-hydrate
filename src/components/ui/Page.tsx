@@ -39,6 +39,10 @@ const EditPage = styled(ButtonLink.withComponent('a'))`
   text-decoration: none;
   text-transform: uppercase;
 
+  &:visited {
+    color: ${get('colors.text')};
+  }
+
   &:hover {
     opacity: 1;
     background: ${p => lighten(0.1, p.theme.docz.colors.border)};

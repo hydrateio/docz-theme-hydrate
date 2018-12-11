@@ -1,18 +1,17 @@
 import * as React from 'react'
 import { Component } from 'react'
-import { Menu as DocsMenu, MenuItem, Docs } from 'docz'
+import { Menu as DocsMenu, Docs } from 'docz'
 import withSizes from 'react-sizes'
 import styled from 'react-emotion'
 import match from 'match-sorter'
-import flattendepth from 'lodash/flattendepth'
+import flattenDeep from 'lodash/flattendeep'
 
-//import { Menu as DocsMenu } from '../../../docz'
 import { Logo } from '../Logo'
 import { Search } from '../Search'
 import { Menu } from './Menu'
 import { Docz } from './Docz'
 import { Hamburguer } from './Hamburguer'
-import { getMenusFromDocs } from '../../../utils/getMenusFromDocs'
+import { getMenusFromDocs, Menus } from '../../../utils/getMenusFromDocs'
 
 import { get } from '@utils/theme'
 import { breakpoints } from '@styles/responsive'
@@ -72,6 +71,14 @@ const Menus = styled('nav')`
   flex: 1;
   overflow-y: auto;
   margin-bottom: 10px;
+  direction: rtl;
+  &:hover {
+    width: 200%;
+  }
+`
+
+const LTR = styled('div')`
+  direction: ltr;
 `
 
 const Empty = styled('div')`
@@ -121,7 +128,7 @@ const ToggleBackground = styled('div')`
 `
 
 interface SidebarState {
-  menus: MenuItem[] | null
+  menus: Menus | null
   searching: boolean
   lastVal: string
   showing: boolean
@@ -153,8 +160,9 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
     const { showing } = this.state
 
     return (
-      <DocsMenu>
-        {initial => {
+      <Docs>
+        {({ docs }) => {
+          const initial = getMenusFromDocs(docs)
           const menus = this.state.menus || initial
 
           return (
@@ -168,26 +176,25 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
                   <Logo showBg={!showing} />
                   <Search onSearch={this.handleSearchDocs(initial, menus)} />
 
-                  <Docs>
-                    {({ docs }) => {
-                      const menus = getMenusFromDocs(docs)
-
-                      return menus.length === 0 ? (
-                        <Empty>No documents found.</Empty>
-                      ) : (
-                          <Menus>
-                            {menus.map((menu) => (
-                              <Menu
-                                key={menu.name}
-                                item={menu}
-                                sidebarToggle={this.handleSidebarToggle}
-                                collapseAll={Boolean(this.state.searching)}
-                              />
-                            ))}
-                          </Menus>
-                        )
-                    }}
-                  </Docs>
+                  {menus.length === 0 ? (
+                    <Empty>No documents found.</Empty>
+                  ) : (
+                      <Menus>
+                        <LTR>
+                          {menus.map((menu) => (
+                            <Menu
+                              key={menu.name}
+                              item={menu}
+                              sidebarToggle={this.handleSidebarToggle}
+                              collapseAll={Boolean(this.state.searching)}
+                              levels={menu.levels || 0}
+                              level={0}
+                            />
+                          ))}
+                        </LTR>
+                      </Menus>
+                    )
+                  }
                   <Footer>
                     Built with
                     <FooterLink href="https://docz.site" target="_blank">
@@ -203,7 +210,7 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
             </React.Fragment>
           )
         }}
-      </DocsMenu>
+      </Docs>
     )
   }
 
@@ -217,21 +224,51 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
     }
   }
 
-  private match = (val: string, menu: MenuItem[]) => {
-    const items = menu.map(item => [item].concat(item.menu || []))
-    const flattened = flattendepth(items, 2)
+  private match = (val: string, menu: Menus) => {
+    const getItemsFromMenus = (menus: Menus) => {
+      const items: Menus = []
+      const loop = (itemMenus: Menus) => {
+        itemMenus.forEach(menu => {
+          if (menu.items) {
+            items.push(menu.items)
+          }
+          if (menu.menus) {
+            loop(menu.menus);
+          }
+        })
+      }
+      loop(menus);
+      return items;
+    }
 
+    const items = menu.map(item => {
+      let items: Menus = []
+      const concat = (arr: Menus) => {
+        items = new Array().concat(items, arr)
+      }
+      if (!item.items && !item.menus) {
+        concat([item])
+      }
+      if (item.items) {
+        concat(item.items)
+      }
+      if (item.menus) {
+        concat(getItemsFromMenus(item.menus))
+      }
+      return items;
+    })
+    const flattened = flattenDeep(items)
     return match(flattened, val, { keys: ['name'] })
   }
 
-  private search = (initial: MenuItem[], menus: MenuItem[], val: string) => {
+  private search = (initial: Menus, menus: Menus, val: string) => {
     const change = !val.startsWith(this.state.lastVal)
 
     this.setState({ lastVal: val })
     return this.match(val, change ? initial : menus)
   }
 
-  private handleSearchDocs = (initial: MenuItem[], menus: MenuItem[]) => (
+  private handleSearchDocs = (initial: Menus, menus: Menus) => (
     val: string
   ) => {
     const isEmpty = val.length === 0

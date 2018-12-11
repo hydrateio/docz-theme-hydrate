@@ -4,7 +4,8 @@ export const styles = {
     lineHeight: 1.6,
   },
   container: {
-    width: ['100%', '100%', 920],
+    maxWidth: ['100%', '100%', 920],
+    width: '100%',
     padding: ['20px', '0 40px 40px'],
   },
   h1: {

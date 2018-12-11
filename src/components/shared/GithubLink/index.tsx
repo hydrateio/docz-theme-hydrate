@@ -2,7 +2,6 @@ import * as React from 'react'
 import { SFC } from 'react'
 import styled, { keyframes } from 'react-emotion'
 import { get } from '@utils/theme'
-import { LinkStyled } from '../../ui/Link'
 
 const octocatWave = keyframes`
   0%, 100% {
@@ -16,7 +15,7 @@ const octocatWave = keyframes`
   }
 `
 
-const Link = styled(LinkStyled)`
+const Link = styled('a')`
   &:hover .octo-arm {
     animation: ${octocatWave} 560ms ease-in-out;
   }

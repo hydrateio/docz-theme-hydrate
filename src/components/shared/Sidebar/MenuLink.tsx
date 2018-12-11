@@ -4,7 +4,7 @@ import { Link, Entry, ThemeConfig } from 'docz'
 import styled, { css } from 'react-emotion'
 
 import { MenuHeadings } from './MenuHeadings'
-import { get } from '@utils/theme'
+import { Menu } from '@utils/getMenusFromDocs'
 
 interface WrapperProps {
   active: boolean
@@ -22,26 +22,13 @@ const activeWrapper = css`
 const Wrapper = styled('div')`
   position: relative;
   transition: padding 0.2s;
-
-  &:after {
-    position: absolute;
-    display: block;
-    content: '';
-    top: 30px;
-    left: 24px;
-    width: 0;
-    height: calc(100% - 36px);
-    border-left: 1px dashed ${get('colors.sidebarBorder')};
-    transition: width 0.2s;
-  }
-
   ${(p: WrapperProps) => p.active && activeWrapper};
 `
 
-export const linkStyle = ({ colors }: any) => css`
+export const linkStyle = ({ colors, isItem }: any) => css`
   position: relative;
   display: block;
-  padding: 4px 24px;
+  padding: 4px ${isItem ? '24px' : '56px'} 4px 24px;
   font-weight: 600;
   font-size: 18px;
   letter-spacing: -0.02em;
@@ -69,10 +56,11 @@ export const getActiveFromClass = (el: HTMLElement | null) =>
   Boolean(el && el.classList.contains('active'))
 
 interface LinkProps {
-  item: Entry,
+  item: Menu | Entry,
   onClick?: React.MouseEventHandler<any>
   className?: string
   innerRef?: (node: any) => void
+  isItem?: boolean
 }
 
 interface LinkState {
@@ -100,12 +88,12 @@ export class MenuLink extends Component<LinkProps, LinkState> {
 
   public render(): React.ReactNode {
     const { active } = this.state
-    const { item, children, onClick, innerRef } = this.props
+    const { item, children, onClick, innerRef, isItem } = this.props
 
     const commonProps = (config: any) => ({
       children,
       onClick,
-      className: linkStyle(config.themeConfig),
+      className: linkStyle({ ...config.themeConfig, isItem }),
       innerRef: (node: any) => {
         innerRef && innerRef(node)
         this.$el = node
@@ -118,10 +106,6 @@ export class MenuLink extends Component<LinkProps, LinkState> {
           {config => {
             const route: any = item.route === '/' ? '/' : item.route
             const props = { ...commonProps(config) }
-
-            if (item.href) {
-              return <LinkAnchor {...props} href={item.href} target="_blank" />
-            }
 
             if (item.route) {
               return <Link {...props} to={route} />
