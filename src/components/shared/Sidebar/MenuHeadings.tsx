@@ -13,6 +13,19 @@ const Submenu = styled('div')`
   display: flex;
   flex-direction: column;
   margin: 5px 0 0 24px;
+  position: relative;
+
+  &:before {
+    position: absolute;
+    display: block;
+    content: '';
+    top: -6px;
+    left: 0;
+    width: 0;
+    height: calc(100% + 6px);
+    border-left: 1px dashed ${themeGet('colors.sidebarBorder')};
+    transition: width 0.2s;
+  }
 `
 
 const SmallLink = styled(Link)`

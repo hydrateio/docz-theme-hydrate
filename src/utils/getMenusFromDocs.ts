@@ -5,10 +5,14 @@ import set from 'lodash/set'
 import unset from 'lodash/unset'
 
 export interface Menu {
-  name: string,
-  items: Entry[],
-  menus: Entry[]
+  name: string
+  items: Entry[]
+  menus: Menu[]
+  route?: string
+  levels?: number
 }
+
+export type Menus = Array<Entry | Menu>
 
 const sortByDelimiter = (delimiter: string) => (a: string, b: string) => {
   const splitA = a.split(delimiter).length - 1;
@@ -23,19 +27,23 @@ const sortByDelimiter = (delimiter: string) => (a: string, b: string) => {
   return 0
 }
 
-const getMenusFromDocs = (docs: Entry[]) => {
+const getMenusFromDocs = (docs: Entry[]): Menus => {
   const uniqueMenus: { [key: string]: Menu } = {}
   const delimiter = '__'
+  const rootItems: Entry[] = []
 
   docs.forEach(doc => {
     const menu = Array.isArray(doc.menu) ? doc.menu.join(delimiter) : doc.menu
 
     if (menu) {
       if (!Object.keys(uniqueMenus).includes(menu)) {
-        uniqueMenus[menu] = { name: menu.split(delimiter).pop(), items: [doc], menus: [] }
+        uniqueMenus[menu] = { name: menu.split(delimiter).pop() || '', items: [doc], menus: [] }
       } else {
         uniqueMenus[menu].items.push(doc)
       }
+    } else {
+      rootItems.push(doc)
+      sort(rootItems, 'name')
     }
   })
 
@@ -66,6 +74,8 @@ const getMenusFromDocs = (docs: Entry[]) => {
         if (!currentMenu || parentMenu.length > 0) {
           if (!currentMenu) {
             set(uniqueMenus, currentMenuPath, { name: menuName, items: [], menus: [] })
+            const uniqueMenu = uniqueMenus[splitNestedMenu[0]];
+            uniqueMenu.levels = uniqueMenu.levels && uniqueMenu.levels > 0 ? uniqueMenu.levels + 1 : 1
           }
 
           if (index + 1 === splitNestedMenu.length) {
@@ -89,11 +99,14 @@ const getMenusFromDocs = (docs: Entry[]) => {
     unset(uniqueMenus, nestedMenu)
   })
 
-  const array = Object.keys(uniqueMenus).map(menu => ({
+  const menus: Menu[] = Object.keys(uniqueMenus).map(menu => ({
     ...uniqueMenus[menu],
     name: menu
   }))
-  return array
+
+  const menuArray = new Array().concat(menus, rootItems)
+
+  return menuArray
 }
 
 export { getMenusFromDocs }

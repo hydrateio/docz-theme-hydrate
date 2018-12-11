@@ -1,17 +1,18 @@
 import * as React from 'react'
 import { Component } from 'react'
 import ChevronDown from 'react-feather/dist/icons/chevron-down'
-import styled from 'react-emotion'
+import styled, { css } from 'react-emotion'
 import { Entry } from 'docz'
 
-import { MenuLink, getActiveFromClass } from './MenuLink'
+import { MenuLink } from './MenuLink'
 import { get } from '@utils/theme'
-import { Menu as MenuItem } from '@utils/getMenusFromDocs'
+import { Menu as MenuType } from '@utils/getMenusFromDocs'
 
-const Wrapper = styled('div')`
-  display: flex;
-  flex-direction: column;
-`
+interface WrapperProps {
+  level: number
+  opened: boolean
+  hasMenus: boolean
+}
 
 interface OpenedProps {
   opened: boolean
@@ -19,9 +20,44 @@ interface OpenedProps {
 
 const List = styled('dl')`
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   visibility: ${(p: OpenedProps) => (p.opened ? 'visible' : 'hidden')};
-  max-height: ${(p: OpenedProps) => (p.opened ? 'auto' : '0px')};
+  max-height: ${(p: OpenedProps) => (p.opened ? 'none' : '0px')};
+`
+
+const sidebarBg = get('colors.sidebarBg')
+
+const closedWrapperStyles = (p: WrapperProps) => css`
+  background: ${sidebarBg(p)};
+  position: relative;
+  & ${List} {
+    margin: 0;
+  }
+  &:hover > ${List} {
+    background: ${sidebarBg(p)};
+    position: absolute;
+    top: 0;
+    left: 100%;
+    visibility: visible;
+    max-height: none;
+    width: 100%;
+    ${List} {
+      position: static;
+    }
+  }
+`
+
+const Wrapper = styled('div')`
+  display: flex;
+  flex-direction: column;
+  width: ${(p: WrapperProps) => p.level === 0 ? '280px' : 'auto'};
+  min-width: ${(p: WrapperProps) => p.level === 0 ? '280px' : '0'};
+
+  ${(p: WrapperProps) => !p.opened && closedWrapperStyles(p)}
+
+  &:hover > ${List} {
+    overflow: ${(p: WrapperProps) => !p.hasMenus ? 'auto' : 'visible'};
+  }
 `
 
 const iconRotate = (p: OpenedProps) => (p.opened ? '-180deg' : '0deg')
@@ -33,8 +69,13 @@ const Icon = styled('div')`
   transform: translateY(-50%) rotate(${iconRotate});
   transform-origin: 50% 50%;
   transition: transform 0.3s;
+  height: 1rem;
+  width: 1rem;
 
   & svg {
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 1rem;
     width: 1rem;
     stroke: ${get('colors.primary')};
@@ -43,9 +84,11 @@ const Icon = styled('div')`
 `
 
 export interface MenuProps {
-  item: MenuItem
+  item: MenuType | Entry
   sidebarToggle: (ev: React.SyntheticEvent<any>) => void
   collapseAll: boolean
+  level: number
+  levels: number
 }
 
 export interface MenuState {
@@ -72,11 +115,13 @@ export class Menu extends Component<MenuProps, MenuState> {
   }
 
   public render(): React.ReactNode {
-    const { item, sidebarToggle, collapseAll } = this.props
+    const { item, sidebarToggle, collapseAll, level, levels } = this.props
 
     const show = collapseAll || this.state.opened
-    const hasChildren = !item.href && ((item.items && item.items.length > 0) || (item.menus && item.menus.length > 0))
-    const hasToggle = !item.href && !item.route
+    const hasItems = Boolean(item.items && item.items.length > 0)
+    const hasMenus = Boolean(item.menus && item.menus.length > 0)
+    const hasChildren = hasItems || hasMenus
+    const hasToggle = hasChildren
 
     const handleToggle = (ev: any) => {
       ev.preventDefault()
@@ -84,7 +129,7 @@ export class Menu extends Component<MenuProps, MenuState> {
     }
 
     return (
-      <Wrapper innerRef={(node: any) => {
+      <Wrapper hasMenus={hasMenus} opened={show} level={level} innerRef={(node: any) => {
         this.menu = node
       }}>
         <MenuLink item={item} {...hasToggle && { onClick: handleToggle }}>
@@ -97,19 +142,6 @@ export class Menu extends Component<MenuProps, MenuState> {
         </MenuLink>
         {hasChildren && (
           <List opened={show}>
-            {item.menus &&
-              item.menus.map(menu => {
-                return (
-                  <dt key={menu.name}>
-                    <Menu
-                      key={menu.name}
-                      item={menu}
-                    >
-                      {menu.name}
-                    </Menu>
-                  </dt>
-                )
-              })}
             {item.items &&
               item.items.map((item: Entry) => (
                 <dt key={item.id}>
@@ -119,11 +151,29 @@ export class Menu extends Component<MenuProps, MenuState> {
                     innerRef={(node: any) => {
                       this.$els = this.$els.concat([node])
                     }}
+                    isItem={true}
                   >
                     {item.name}
                   </MenuLink>
                 </dt>
               ))}
+            {item.menus &&
+              item.menus.map((menu: MenuType) => {
+                return (
+                  <dt key={menu.name}>
+                    <Menu
+                      key={menu.name}
+                      sidebarToggle={sidebarToggle}
+                      item={menu}
+                      collapseAll={collapseAll}
+                      level={level + 1}
+                      levels={levels}
+                    >
+                      {menu.name}
+                    </Menu>
+                  </dt>
+                )
+              })}
           </List>
         )}
       </Wrapper>
@@ -135,7 +185,7 @@ export class Menu extends Component<MenuProps, MenuState> {
   }
 
   private checkActiveLink = (): void => {
-    const hasActive = Boolean(this.menu && this.menu.querySelector('a.active[aria-current="page"]'))
+    const hasActive = Boolean(this.menu && this.menu.querySelector('a.active'))
     if (hasActive) this.setState({ hasActive, opened: true })
   }
 }
