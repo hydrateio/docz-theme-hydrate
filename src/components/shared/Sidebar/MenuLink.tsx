@@ -25,11 +25,11 @@ const Wrapper = styled('div')`
   ${(p: WrapperProps) => p.active && activeWrapper};
 `
 
-export const linkStyle = ({ colors, isItem }: any) => css`
+export const linkStyle = ({ colors, isItem, level }: any) => css`
   position: relative;
   display: block;
   padding: 4px ${isItem ? '24px' : '56px'} 4px 24px;
-  font-weight: 600;
+  font-weight: ${isItem || level > 0 ? '400' : '600'};
   font-size: 18px;
   letter-spacing: -0.02em;
   color: ${colors.sidebarText};
@@ -44,7 +44,6 @@ export const linkStyle = ({ colors, isItem }: any) => css`
   &:hover,
   &.active {
     color: ${colors.sidebarPrimary || colors.primary};
-    font-weight: 600;
   }
 `
 
@@ -61,6 +60,9 @@ interface LinkProps {
   className?: string
   innerRef?: (node: any) => void
   isItem?: boolean
+  onMouseEnter?: (ev: React.SyntheticEvent<any>) => void
+  onMouseLeave?: (ev: React.SyntheticEvent<any>) => void
+  level?: number
 }
 
 interface LinkState {
@@ -88,12 +90,12 @@ export class MenuLink extends Component<LinkProps, LinkState> {
 
   public render(): React.ReactNode {
     const { active } = this.state
-    const { item, children, onClick, innerRef, isItem } = this.props
+    const { item, children, onClick, innerRef, isItem, onMouseEnter, onMouseLeave, level } = this.props
 
     const commonProps = (config: any) => ({
       children,
       onClick,
-      className: linkStyle({ ...config.themeConfig, isItem }),
+      className: linkStyle({ ...config.themeConfig, isItem, level }),
       innerRef: (node: any) => {
         innerRef && innerRef(node)
         this.$el = node
@@ -101,7 +103,7 @@ export class MenuLink extends Component<LinkProps, LinkState> {
     })
 
     return (
-      <Wrapper active={active}>
+      <Wrapper active={active} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <ThemeConfig>
           {config => {
             const route: any = item.route === '/' ? '/' : item.route

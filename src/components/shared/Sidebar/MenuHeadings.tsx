@@ -31,7 +31,7 @@ const Submenu = styled('div')`
 const SmallLink = styled(Link)`
   position: relative;
   font-size: 14px;
-  padding: 0 0 5px 16px;
+  padding: 0 16px 5px;
   text-decoration: none;
   opacity: 0.5;
   transition: opacity 0.2s;

@@ -10,6 +10,7 @@ export interface Menu {
   menus: Menu[]
   route?: string
   levels?: number
+  order: number
 }
 
 export type Menus = Array<Entry | Menu>
@@ -37,7 +38,7 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
 
     if (menu) {
       if (!Object.keys(uniqueMenus).includes(menu)) {
-        uniqueMenus[menu] = { name: menu.split(delimiter).pop() || '', items: [doc], menus: [] }
+        uniqueMenus[menu] = { name: menu.split(delimiter).pop() || '', items: [doc], menus: [], order: 0 }
       } else {
         uniqueMenus[menu].items.push(doc)
       }
@@ -73,7 +74,7 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
 
         if (!currentMenu || parentMenu.length > 0) {
           if (!currentMenu) {
-            set(uniqueMenus, currentMenuPath, { name: menuName, items: [], menus: [] })
+            set(uniqueMenus, currentMenuPath, { name: menuName, items: [], menus: [], order: 0 })
             const uniqueMenu = uniqueMenus[splitNestedMenu[0]];
             uniqueMenu.levels = uniqueMenu.levels && uniqueMenu.levels > 0 ? uniqueMenu.levels + 1 : 1
           }
@@ -105,6 +106,8 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
   }))
 
   const menuArray = new Array().concat(menus, rootItems)
+
+  sort(menuArray, 'order', 'name')
 
   return menuArray
 }

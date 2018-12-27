@@ -14,7 +14,7 @@ import { Hamburguer } from './Hamburguer'
 import { getMenusFromDocs, Menus } from '../../../utils/getMenusFromDocs'
 
 import { get } from '@utils/theme'
-import { breakpoints } from '@styles/responsive'
+import { mq, breakpoints } from '@styles/responsive'
 
 interface WrapperProps {
   opened: boolean
@@ -25,11 +25,6 @@ const sidebarBg = get('colors.sidebarBg')
 const sidebarText = get('colors.sidebarText')
 const sidebarBorder = get('colors.sidebarBorder')
 
-const position = (p: WrapperProps) =>
-  p.theme.docz.mq({
-    position: ['absolute', 'absolute', 'absolute', 'relative'],
-  })
-
 const Wrapper = styled('div')`
   position: relative;
   width: 280px;
@@ -38,8 +33,11 @@ const Wrapper = styled('div')`
   background: ${sidebarBg};
   transition: transform 0.2s, background 0.3s;
   z-index: 1000;
-  ${position};
+
   ${get('styles.sidebar')};
+  ${mq({
+  position: ['absolute', 'absolute', 'absolute', 'relative'],
+})};
 
   dl {
     padding: 0;
@@ -71,14 +69,6 @@ const Menus = styled('nav')`
   flex: 1;
   overflow-y: auto;
   margin-bottom: 10px;
-  direction: rtl;
-  &:hover {
-    width: 200%;
-  }
-`
-
-const LTR = styled('div')`
-  direction: ltr;
 `
 
 const Empty = styled('div')`
@@ -131,7 +121,7 @@ interface SidebarState {
   menus: Menus | null
   searching: boolean
   lastVal: string
-  showing: boolean
+  hidden: boolean
 }
 
 interface SidebarProps {
@@ -143,21 +133,29 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
     lastVal: '',
     menus: null,
     searching: false,
-    showing: true,
+    hidden: true,
   }
 
   public componentDidUpdate(pProps: SidebarProps, pState: SidebarState): void {
-    if (pState.showing !== this.state.showing) {
-      this.addOverlayClass()
+    const { isDesktop } = this.props
+    const { hidden } = this.state
+
+    if (pState.hidden !== this.state.hidden) {
+      this.toggleOverlayClass()
+    }
+    if (pProps.isDesktop !== isDesktop && !hidden && isDesktop) {
+      this.setState({ hidden: true })
+      this.removeOverlayClass()
     }
   }
 
   public componentDidMount(): void {
-    this.addOverlayClass()
+    this.toggleOverlayClass()
   }
 
   public render(): React.ReactNode {
-    const { showing } = this.state
+    const { hidden } = this.state
+    const { isDesktop } = this.props
 
     return (
       <Docs>
@@ -167,31 +165,30 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
 
           return (
             <React.Fragment>
-              <Wrapper opened={showing}>
+              <Wrapper opened={hidden}>
                 <Content>
                   <Hamburguer
-                    opened={!showing}
+                    opened={!hidden}
                     onClick={this.handleSidebarToggle}
                   />
-                  <Logo showBg={!showing} />
+                  <Logo showBg={!hidden} />
                   <Search onSearch={this.handleSearchDocs(initial, menus)} />
 
                   {menus.length === 0 ? (
                     <Empty>No documents found.</Empty>
                   ) : (
                       <Menus>
-                        <LTR>
-                          {menus.map((menu) => (
-                            <Menu
-                              key={menu.name}
-                              item={menu}
-                              sidebarToggle={this.handleSidebarToggle}
-                              collapseAll={Boolean(this.state.searching)}
-                              levels={menu.levels || 0}
-                              level={0}
-                            />
-                          ))}
-                        </LTR>
+                        {menus.map((menu) => (
+                          <Menu
+                            key={menu.name}
+                            item={menu}
+                            sidebarToggle={this.handleSidebarToggle}
+                            collapseAll={Boolean(this.state.searching)}
+                            levels={menu.levels || 0}
+                            level={0}
+                            isDesktop={isDesktop}
+                          />
+                        ))}
                       </Menus>
                     )
                   }
@@ -204,7 +201,7 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
                 </Content>
               </Wrapper>
               <ToggleBackground
-                opened={showing}
+                opened={hidden}
                 onClick={this.handleSidebarToggle}
               />
             </React.Fragment>
@@ -214,14 +211,21 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
     )
   }
 
-  private addOverlayClass = () => {
+  private toggleOverlayClass = () => {
     const { isDesktop } = this.props
-    const { showing } = this.state
-    const method = showing ? 'add' : 'remove'
+    const { hidden } = this.state
+    const method = !hidden ? this.addOverlayClass : this.removeOverlayClass
 
     if (window && typeof window !== 'undefined' && !isDesktop) {
-      document.documentElement!.classList[method]('with-overlay')
+      method()
     }
+  }
+
+  private removeOverlayClass(): void {
+    document.documentElement!.classList.remove('with-overlay')
+  }
+  private addOverlayClass(): void {
+    document.documentElement!.classList.add('with-overlay')
   }
 
   private match = (val: string, menu: Menus) => {
@@ -281,7 +285,7 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
 
   private handleSidebarToggle = () => {
     if (this.props.isDesktop) return
-    this.setState({ showing: !this.state.showing })
+    this.setState({ hidden: !this.state.hidden })
   }
 }
 
