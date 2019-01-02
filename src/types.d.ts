@@ -35,6 +35,7 @@ declare module 're-resizable'
 declare module 'webfontloader'
 declare module 'rc-tooltip'
 declare module 'array-sort'
+declare module 'react-portal'
 
 declare module 'facepaint' {
   interface Styles {

@@ -45,6 +45,7 @@
     "react-feather": "^1.1.4",
     "react-live": "^1.12.0",
     "react-perfect-scrollbar": "^1.4.2",
+    "react-portal": "^4.2.0",
     "react-powerplug": "^1.0.0",
     "react-sizes": "^1.0.4",
     "ulid": "^2.3.0",

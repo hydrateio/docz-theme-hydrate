@@ -1,10 +1,12 @@
 import * as React from 'react'
 import { Component } from 'react'
 import ChevronDown from 'react-feather/dist/icons/chevron-down'
-import styled, { css } from 'react-emotion'
+import styled from 'react-emotion'
 import { Entry } from 'docz'
+import { Portal } from 'react-portal'
 
 import { MenuLink } from './MenuLink'
+import { SubMenu } from './SubMenu'
 import { get } from '@utils/theme'
 import { Menu as MenuType } from '@utils/getMenusFromDocs'
 
@@ -18,52 +20,21 @@ interface OpenedProps {
   opened: boolean
 }
 
-const List = styled('dl')`
-  flex: 1;
-  overflow: hidden;
-  visibility: ${(p: OpenedProps) => (p.opened ? 'visible' : 'hidden')};
-  max-height: ${(p: OpenedProps) => (p.opened ? 'none' : '0px')};
-`
-
 const sidebarBg = get('colors.sidebarBg')
 
-const closedWrapperStyles = (p: WrapperProps) => css`
-  background: ${sidebarBg(p)};
-  position: relative;
-  & ${List} {
-    margin: 0;
-  }
-  &:hover > ${List} {
-    background: ${sidebarBg(p)};
-    position: absolute;
-    top: 0;
-    left: 100%;
-    visibility: visible;
-    max-height: none;
-    width: 100%;
-    ${List} {
-      position: static;
-    }
-  }
-`
-
 const Wrapper = styled('div')`
+  background: ${sidebarBg};
   display: flex;
   flex-direction: column;
   width: ${(p: WrapperProps) => p.level === 0 ? '280px' : 'auto'};
   min-width: ${(p: WrapperProps) => p.level === 0 ? '280px' : '0'};
-
-  ${(p: WrapperProps) => !p.opened && closedWrapperStyles(p)}
-
-  &:hover > ${List} {
-    overflow: ${(p: WrapperProps) => !p.hasMenus ? 'auto' : 'visible'};
-  }
 `
 
 const iconRotate = (p: OpenedProps) => (p.opened ? '-180deg' : '0deg')
 
 const Icon = styled('div')`
   position: absolute;
+  pointer-events: none;
   top: 50%;
   right: 20px;
   transform: translateY(-50%) rotate(${iconRotate});
@@ -89,25 +60,30 @@ export interface MenuProps {
   collapseAll: boolean
   level: number
   levels: number
+  isDesktop: boolean
 }
 
 export interface MenuState {
   opened: boolean
   hasActive: boolean
+  hovered: boolean
+  menuPosition: { top: number, left: number } | undefined
 }
 
 export class Menu extends Component<MenuProps, MenuState> {
   public menu: HTMLElement | null
-  public $els: HTMLElement[]
   public state: MenuState = {
     opened: false,
-    hasActive: false
+    hasActive: false,
+    hovered: false,
+    menuPosition: undefined
   }
+  public timer: number | null
 
   constructor(props: MenuProps) {
     super(props)
-    this.$els = []
     this.menu = null
+    this.timer = null
   }
 
   public componentDidMount(): void {
@@ -115,8 +91,9 @@ export class Menu extends Component<MenuProps, MenuState> {
   }
 
   public render(): React.ReactNode {
-    const { item, sidebarToggle, collapseAll, level, levels } = this.props
+    const { item, collapseAll, level, isDesktop } = this.props
 
+    const hover = this.state.hovered
     const show = collapseAll || this.state.opened
     const hasItems = Boolean(item.items && item.items.length > 0)
     const hasMenus = Boolean(item.menus && item.menus.length > 0)
@@ -128,11 +105,24 @@ export class Menu extends Component<MenuProps, MenuState> {
       this.toggle()
     }
 
+    const mouseEvents = {
+      onMouseEnter: this.menuLinkMouseEnter,
+      onMouseLeave: this.onMouseLeave,
+    }
+
     return (
-      <Wrapper hasMenus={hasMenus} opened={show} level={level} innerRef={(node: any) => {
-        this.menu = node
-      }}>
-        <MenuLink item={item} {...hasToggle && { onClick: handleToggle }}>
+      <Wrapper
+        hasMenus={hasMenus}
+        opened={show}
+        level={level}
+        innerRef={(node: any) => {
+          this.menu = node
+        }}>
+        <MenuLink
+          item={item}
+          {...(!show && isDesktop) && { ...mouseEvents }}
+          {...hasToggle && { onClick: handleToggle }}
+          level={level}>
           {item.name}
           {hasChildren && (
             <Icon opened={show}>
@@ -140,41 +130,20 @@ export class Menu extends Component<MenuProps, MenuState> {
             </Icon>
           )}
         </MenuLink>
-        {hasChildren && (
-          <List opened={show}>
-            {item.items &&
-              item.items.map((item: Entry) => (
-                <dt key={item.id}>
-                  <MenuLink
-                    item={item}
-                    onClick={sidebarToggle}
-                    innerRef={(node: any) => {
-                      this.$els = this.$els.concat([node])
-                    }}
-                    isItem={true}
-                  >
-                    {item.name}
-                  </MenuLink>
-                </dt>
-              ))}
-            {item.menus &&
-              item.menus.map((menu: MenuType) => {
-                return (
-                  <dt key={menu.name}>
-                    <Menu
-                      key={menu.name}
-                      sidebarToggle={sidebarToggle}
-                      item={menu}
-                      collapseAll={collapseAll}
-                      level={level + 1}
-                      levels={levels}
-                    >
-                      {menu.name}
-                    </Menu>
-                  </dt>
-                )
-              })}
-          </List>
+        {hasChildren && <SubMenu show={show} {...this.props} />}
+        {(hasChildren && !show && hover && level > 0) && (
+          <Portal>
+            <SubMenu
+              show={show}
+              {...this.props}
+              hovered={true}
+              menuPosition={this.state.menuPosition}
+              {...isDesktop && {
+                onMouseEnter: this.subMenuMouseEnter,
+                onMouseLeave: this.onMouseLeave
+              }}
+            />
+          </Portal>
         )}
       </Wrapper>
     )
@@ -185,7 +154,50 @@ export class Menu extends Component<MenuProps, MenuState> {
   }
 
   private checkActiveLink = (): void => {
-    const hasActive = Boolean(this.menu && this.menu.querySelector('a.active'))
-    if (hasActive) this.setState({ hasActive, opened: true })
+    const { isDesktop } = this.props
+    const activeLink = this.menu && this.menu.querySelector('a.active')
+    const hasActive = Boolean(activeLink)
+    if (hasActive) {
+      this.setState({ hasActive, opened: true })
+      if (isDesktop) {
+        setTimeout(() => activeLink && activeLink.scrollIntoView())
+      }
+    }
+  }
+
+  private menuLinkMouseEnter = (e: React.SyntheticEvent<any>): void => {
+    e.stopPropagation()
+    const { top, right } = e.currentTarget.getBoundingClientRect()
+    const menuPosition = { top, left: right };
+
+    this.setState({ hovered: true, menuPosition })
+    this.clearTimer()
+  }
+
+  private subMenuMouseEnter = (e: React.SyntheticEvent<any>): void => {
+    this.setState({ hovered: true })
+    this.clearTimer()
+  }
+
+  private onMouseLeave = (e: React.SyntheticEvent<any>): void => {
+    this.setTimer()
+  }
+
+  private clearTimer = () => {
+    if (this.timer) {
+      clearTimeout(this.timer)
+    }
+    this.timer = null
+  }
+
+  private setTimer = () => {
+    this.clearTimer()
+    this.timer = setTimeout(this.checkHovered, 100)
+  }
+
+  private checkHovered = () => {
+    if (this.timer) {
+      this.setState({ hovered: false })
+    }
   }
 }
