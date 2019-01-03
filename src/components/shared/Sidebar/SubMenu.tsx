@@ -6,7 +6,6 @@ import sort from 'array-sort'
 import { Menu, MenuProps } from './Menu'
 import { MenuLink } from './MenuLink'
 import { get } from '@utils/theme'
-import { Menu as MenuType } from '@utils/getMenusFromDocs'
 
 interface SubMenuProps {
   hovered?: boolean
@@ -18,6 +17,7 @@ interface SubMenuProps {
 
 interface OpenedProps {
   opened: boolean
+  level: number
 }
 
 interface WrapperProps {
@@ -39,6 +39,7 @@ const List = styled('dl')`
   overflow-y: auto;
   visibility: ${(p: OpenedProps) => (p.opened ? 'visible' : 'hidden')};
   max-height: ${(p: OpenedProps) => (p.opened ? 'none' : '0px')};
+  box-shadow: ${(p: OpenedProps) => p.level > 0 ? '4px 4px 8px 0px rgba(120,120,120,0.3)' : 'none'};
 `
 
 export const SubMenu = (props: SubMenuProps & MenuProps) => {
@@ -58,7 +59,7 @@ export const SubMenu = (props: SubMenuProps & MenuProps) => {
       {...hovered && { ...mouseEvents }}
       show={show}
       style={{ ...(menuPosition || {}) }}>
-      <List opened={hovered || show}>
+      <List opened={hovered || show} level={level}>
         {menuItems &&
           menuItems.map((item: Entry) => {
             if (item.id) {
