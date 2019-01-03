@@ -1,6 +1,6 @@
 {
   "name": "docz-theme-hydrate",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Hydrate theme for docz",
   "license": "MIT",
   "main": "dist/index.js",
