@@ -18,6 +18,7 @@ interface SubMenuProps {
 interface OpenedProps {
   opened: boolean
   level: number
+  show: boolean
 }
 
 interface WrapperProps {
@@ -39,7 +40,7 @@ const List = styled('dl')`
   overflow-y: auto;
   visibility: ${(p: OpenedProps) => (p.opened ? 'visible' : 'hidden')};
   max-height: ${(p: OpenedProps) => (p.opened ? 'none' : '0px')};
-  box-shadow: ${(p: OpenedProps) => p.level > 0 ? '4px 4px 8px 0px rgba(120,120,120,0.3)' : 'none'};
+  box-shadow: ${(p: OpenedProps) => p.level > 0 && !p.show ? '4px 4px 8px 0px rgba(120,120,120,0.3)' : 'none'};
 `
 
 export const SubMenu = (props: SubMenuProps & MenuProps) => {
@@ -59,7 +60,7 @@ export const SubMenu = (props: SubMenuProps & MenuProps) => {
       {...hovered && { ...mouseEvents }}
       show={show}
       style={{ ...(menuPosition || {}) }}>
-      <List opened={hovered || show} level={level}>
+      <List opened={hovered || show} show={show} level={level}>
         {menuItems &&
           menuItems.map((item: Entry) => {
             if (item.id) {
