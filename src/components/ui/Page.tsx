@@ -3,11 +3,17 @@ import { SFC, Fragment } from 'react'
 import { PageProps, ThemeConfig } from 'docz'
 import lighten from 'polished/lib/color/lighten'
 import Edit from 'react-feather/dist/icons/edit-2'
-import styled from 'react-emotion'
+import styled, { css } from 'react-emotion'
 
 import { ButtonLink } from './Button'
 import { GithubLink, Sidebar, Main } from '../shared'
 import { get } from '@utils/theme'
+
+type HydratePageProps = PageProps & {
+  doc: {
+    fullcontainer?: boolean
+  }
+}
 
 const Wrapper = styled('div')`
   flex: 1;
@@ -17,10 +23,25 @@ const Wrapper = styled('div')`
   min-width: 0;
 `
 
+const fullContainerStyles = css`
+  @media (min-width: 0px) {
+    height: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    padding: 0;
+    width: 100%;
+  }
+  & > div {
+    height: 100%;
+    overflow-y: auto;
+  }
+`
+
 export const Container = styled('div')`
   box-sizing: border-box;
   margin: 0 auto;
   ${p => p.theme.docz.mq(p.theme.docz.styles.container)};
+  ${(p: HydratePageProps) => p.fullcontainer && fullContainerStyles}
 `
 
 const EditPage = styled(ButtonLink.withComponent('a'))`
@@ -60,9 +81,9 @@ const EditIcon = styled(Edit)`
   margin-right: 5px;
 `
 
-export const Page: SFC<PageProps> = ({
+export const Page: SFC<HydratePageProps> = ({
   children,
-  doc: { link, fullpage, edit = true, source },
+  doc: { link, fullpage, fullcontainer, edit = true, source },
 }) => {
   const content = (
     <Fragment>
@@ -82,7 +103,11 @@ export const Page: SFC<PageProps> = ({
           {repository && <GithubLink repository={repository} />}
           {!fullpage && <Sidebar />}
           <Wrapper>
-            {fullpage ? content : <Container>{content}</Container>}
+            {fullpage ? (
+              content
+            ) : (
+              <Container fullcontainer={fullcontainer}>{content}</Container>
+            )}
           </Wrapper>
         </Main>
       )}

@@ -7,6 +7,7 @@ import get from 'lodash/get'
 const Wrapper = styled('div')`
   display: flex;
   max-width: 100vw;
+  min-height: 100%;
 `
 
 interface MainProps {

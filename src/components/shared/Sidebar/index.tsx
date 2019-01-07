@@ -114,7 +114,7 @@ const ToggleBackground = styled('div')`
   left: 0;
   right: 0;
   cursor: pointer;
-  z-index: 99;
+  z-index: 1;
 `
 
 interface SidebarState {
