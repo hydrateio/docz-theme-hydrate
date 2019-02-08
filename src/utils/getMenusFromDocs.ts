@@ -60,7 +60,7 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
       } else {
         uniqueMenus[menu].items.push(doc)
       }
-    } else if (!doc.routable) {
+    } else if (doc.routable === false) {
       // ignore non-routable documents
     } else {
       rootItems.push(doc)
