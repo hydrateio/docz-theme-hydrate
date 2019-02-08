@@ -110,6 +110,10 @@ export class MenuLink extends Component<LinkProps, LinkState> {
             const route: any = item.route === '/' ? '/' : item.route
             const props = { ...commonProps(config) }
 
+            if (item.type === 'external-link') {
+              return <LinkAnchor {...props} href={item.href} />
+            }
+
             if (item.route) {
               if (location.hash) {
                 props.activeClassName = ''
