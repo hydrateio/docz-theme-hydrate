@@ -29,7 +29,7 @@ const Wrapper = styled('div')`
   position: relative;
   width: 280px;
   min-width: 280px;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--color-bar-height));
   background: ${sidebarBg};
   transition: transform 0.2s, background 0.3s;
   z-index: 2;
@@ -41,7 +41,7 @@ const Wrapper = styled('div')`
 
   dl {
     padding: 0;
-    margin: 0 0 0 16px;
+    margin: 0;
   }
 
   dl a:not([href="#"]) {
@@ -55,7 +55,7 @@ const Wrapper = styled('div')`
 
 const Content = styled('div')`
   position: fixed;
-  top: 0;
+  top: var(--color-bar-height);
   left: 0;
   display: flex;
   flex-direction: column;

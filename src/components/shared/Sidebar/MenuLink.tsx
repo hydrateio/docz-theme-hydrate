@@ -28,27 +28,28 @@ const Wrapper = styled('div')`
 export const linkStyle = ({ colors, isItem, level }: any) => css`
   position: relative;
   display: block;
-  padding: 4px ${isItem ? '24px' : '56px'} 4px 24px;
-  font-weight: ${isItem || level > 0 ? '400' : '600'};
-  font-size: 18px;
+  padding: 4px 36px;
+  font-weight: 400;
+  font-size: ${level > 0 ? 16 : 20}px;
   letter-spacing: -0.02em;
   color: ${colors.sidebarText};
   text-decoration: none;
   transition: color 0.2s;
 
+  &:focus,
   &:hover,
   &:visited {
     color: ${colors.sidebarText};
   }
 
-  &:hover,
   &.active {
-    color: ${colors.sidebarPrimary || colors.primary};
+    color: ${colors.sidebarActive};
   }
 `
 
 const LinkAnchor = styled('a')`
   ${p => linkStyle(p.theme.docz)};
+  font-size: 14px;
 `
 
 export const getActiveFromClass = (el: HTMLElement | null) =>
@@ -110,13 +111,16 @@ export class MenuLink extends Component<LinkProps, LinkState> {
             const props = { ...commonProps(config) }
 
             if (item.route) {
+              if (location.hash) {
+                props.activeClassName = ''
+              }
               return <Link {...props} to={route} />
             }
 
             return <LinkAnchor {...props} href="#" />
           }}
         </ThemeConfig>
-        {active && item.route && <MenuHeadings route={item.route} />}
+        {item.route && <MenuHeadings route={item.route} />}
       </Wrapper>
     )
   }

@@ -3,11 +3,27 @@ import { Component } from 'react'
 import { injectGlobal } from 'emotion'
 import styled from 'react-emotion'
 import get from 'lodash/get'
+import { get as themeGet } from '@utils/theme'
+
+const primaryColor = themeGet('colors.primary')
 
 const Wrapper = styled('div')`
+  --color-bar-height: calc(30rem / 16);
   display: flex;
+  flex-wrap: wrap;
   max-width: 100vw;
-  min-height: 100%;
+  min-height: calc(100% - var(--color-bar-height));
+  padding-top: var(--color-bar-height);
+  &:before {
+    background: ${primaryColor};
+    content: '';
+    left: 0;
+    height: var(--color-bar-height);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 3;
+  }
 `
 
 interface MainProps {
@@ -16,6 +32,9 @@ interface MainProps {
 
 const base = (body: any) =>
   injectGlobal`
+    html {
+      font-size: 16px;
+    }
     body {
       ${body};
     }

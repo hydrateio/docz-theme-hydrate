@@ -52,6 +52,7 @@ export const SubMenu = (props: SubMenuProps & MenuProps) => {
   }
 
   const menuItems = new Array().concat(item.items, item.menus)
+  const nextLevel = level + 1
 
   sort(menuItems, ['order', 'name'])
 
@@ -70,6 +71,7 @@ export const SubMenu = (props: SubMenuProps & MenuProps) => {
                     item={item}
                     onClick={sidebarToggle}
                     isItem={true}
+                    level={nextLevel}
                   >
                     {item.name}
                   </MenuLink>
@@ -83,7 +85,7 @@ export const SubMenu = (props: SubMenuProps & MenuProps) => {
                   sidebarToggle={sidebarToggle}
                   item={item}
                   collapseAll={collapseAll}
-                  level={level + 1}
+                  level={nextLevel}
                   levels={levels}
                   isDesktop={isDesktop}
                 >
