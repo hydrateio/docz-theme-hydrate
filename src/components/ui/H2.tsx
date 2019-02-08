@@ -18,7 +18,6 @@ const Icon = styled(Hash)`
 
 const Heading = styled('h2')`
   position: relative;
-  border-bottom: 1px dashed ${get('colors.border')};
   padding-bottom: 5px;
   ${p => p.theme.docz.mq(get('styles.h2')(p))};
 

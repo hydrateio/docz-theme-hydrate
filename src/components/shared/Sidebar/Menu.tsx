@@ -16,42 +16,14 @@ interface WrapperProps {
   hasMenus: boolean
 }
 
-interface OpenedProps {
-  opened: boolean
-}
-
 const sidebarBg = get('colors.sidebarBg')
 
 const Wrapper = styled('div')`
-  background: ${sidebarBg};
+  background-color: ${sidebarBg};
   display: flex;
   flex-direction: column;
   width: ${(p: WrapperProps) => p.level === 0 ? '280px' : 'auto'};
   min-width: ${(p: WrapperProps) => p.level === 0 ? '280px' : '0'};
-`
-
-const iconRotate = (p: OpenedProps) => (p.opened ? '-180deg' : '0deg')
-
-const Icon = styled('div')`
-  position: absolute;
-  pointer-events: none;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%) rotate(${iconRotate});
-  transform-origin: 50% 50%;
-  transition: transform 0.3s;
-  height: 1rem;
-  width: 1rem;
-
-  & svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 1rem;
-    width: 1rem;
-    stroke: ${get('colors.primary')};
-    stroke-width: 3px;
-  }
 `
 
 export interface MenuProps {
@@ -94,7 +66,7 @@ export class Menu extends Component<MenuProps, MenuState> {
     const { item, collapseAll, level, isDesktop } = this.props
 
     const hover = this.state.hovered
-    const show = collapseAll || this.state.opened
+    const show = true // collapseAll || this.state.opened
     const hasItems = Boolean(item.items && item.items.length > 0)
     const hasMenus = Boolean(item.menus && item.menus.length > 0)
     const hasChildren = hasItems || hasMenus
@@ -107,7 +79,7 @@ export class Menu extends Component<MenuProps, MenuState> {
 
     const mouseEvents = {
       onMouseEnter: this.menuLinkMouseEnter,
-      onMouseLeave: this.onMouseLeave,
+      onMouseLeave: this.onMouseLeave
     }
 
     return (
@@ -124,11 +96,6 @@ export class Menu extends Component<MenuProps, MenuState> {
           {...hasToggle && { onClick: handleToggle }}
           level={level}>
           {item.name}
-          {hasChildren && (
-            <Icon opened={show}>
-              <ChevronDown size={15} />
-            </Icon>
-          )}
         </MenuLink>
         {hasChildren && <SubMenu show={show} {...this.props} />}
         {(hasChildren && !show && hover && level > 0) && (

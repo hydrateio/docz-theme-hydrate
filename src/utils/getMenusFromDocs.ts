@@ -28,6 +28,19 @@ const sortByDelimiter = (delimiter: string) => (a: string, b: string) => {
   return 0
 }
 
+const sortByOrder = (a: Menu, b: Menu) => {
+  const orderA = a.order
+  const orderB = b.order
+
+  if (orderA < 0 || orderB < 0 || orderA < orderB) {
+    return -1
+  }
+  if (orderA > orderB) {
+    return 1
+  }
+  return 0
+}
+
 const getMenusFromDocs = (docs: Entry[]): Menus => {
   const uniqueMenus: { [key: string]: Menu } = {}
   const delimiter = '__'
@@ -38,7 +51,12 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
 
     if (menu) {
       if (!Object.keys(uniqueMenus).includes(menu)) {
-        uniqueMenus[menu] = { name: menu.split(delimiter).pop() || '', items: [doc], menus: [], order: 0 }
+        uniqueMenus[menu] = {
+          name: menu.split(delimiter).pop() || '',
+          items: [doc],
+          menus: [],
+          order: -1
+        }
       } else {
         uniqueMenus[menu].items.push(doc)
       }
@@ -57,7 +75,7 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
 
   sort(nestedMenus, sortByDelimiter(delimiter))
 
-  nestedMenus.forEach((nestedMenu) => {
+  nestedMenus.forEach(nestedMenu => {
     const splitNestedMenu = nestedMenu.split(delimiter)
     let menuPath = ''
 
@@ -66,16 +84,24 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
 
       const parentMenu = get(uniqueMenus, menuPath)
       if (Array.isArray(parentMenu)) {
-        const menuIndex = Math.max(0, parentMenu.findIndex(menu => {
-          return Boolean(menu && menu.name === menuName)
-        }))
+        const menuIndex = Math.max(
+          0,
+          parentMenu.findIndex(menu => {
+            return Boolean(menu && menu.name === menuName)
+          })
+        )
         const currentMenuPath = `${menuPath}[${menuIndex}]`
         const currentMenu = get(uniqueMenus, currentMenuPath)
 
         if (!currentMenu || parentMenu.length > 0) {
           if (!currentMenu) {
-            set(uniqueMenus, currentMenuPath, { name: menuName, items: [], menus: [], order: 0 })
-            const uniqueMenu = uniqueMenus[splitNestedMenu[0]];
+            set(uniqueMenus, currentMenuPath, {
+              name: menuName,
+              items: [],
+              menus: [],
+              order: 0
+            })
+            const uniqueMenu = uniqueMenus[splitNestedMenu[0]]
             uniqueMenu.levels = uniqueMenu.levels && uniqueMenu.levels > 0 ? uniqueMenu.levels + 1 : 1
           }
 
@@ -93,7 +119,13 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
 
         menuPath = currentMenuPath
       } else if (!parentMenu) {
-        set(uniqueMenus, menuPath, { name: menuName, menus: [] })
+        set(uniqueMenus, menuPath, {
+          name: menuName,
+          menus: [],
+          order: -1,
+          id: `${menuName}Menu`,
+          items: []
+        })
       }
     })
 
@@ -107,7 +139,7 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
 
   const menuArray = new Array().concat(menus, rootItems)
 
-  sort(menuArray, 'order', 'name')
+  sort(menuArray, sortByOrder, 'name')
 
   return menuArray
 }

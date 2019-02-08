@@ -6,61 +6,32 @@ import get from 'lodash/get'
 
 import { get as themeGet } from '@utils/theme'
 
-const sidebarPrimary = themeGet('colors.sidebarPrimary')
-const primaryColor = themeGet('colors.primary')
-
 const Submenu = styled('div')`
   display: flex;
   flex-direction: column;
-  margin: 5px 0 0 24px;
+  margin: 5px 36px 0;
   position: relative;
-
-  &:before {
-    position: absolute;
-    display: block;
-    content: '';
-    top: -6px;
-    left: 0;
-    width: 0;
-    height: calc(100% + 6px);
-    border-left: 1px dashed ${themeGet('colors.sidebarBorder')};
-    transition: width 0.2s;
-  }
 `
 
 const SmallLink = styled(Link)`
   position: relative;
   font-size: 14px;
-  padding: 0 16px 5px;
+  padding: 0 0 5px;
   text-decoration: none;
-  opacity: 0.5;
+  opacity: 0.8;
   transition: opacity 0.2s;
 
   &,
+  &:hover,
+  &:focus,
   &:visited,
   &.active {
     color: ${themeGet('colors.sidebarText')};
   }
 
   &.active {
+    color: ${themeGet('colors.sidebarActive')};
     opacity: 1;
-  }
-
-  &:before {
-    z-index: 1;
-    position: absolute;
-    display: block;
-    content: '';
-    top: 1px;
-    left: 0;
-    width: 0;
-    height: 20px;
-    background: ${p => sidebarPrimary(p) || primaryColor(p)};
-    transition: width 0.2s;
-  }
-
-  &.active:before {
-    width: 2px;
   }
 `
 

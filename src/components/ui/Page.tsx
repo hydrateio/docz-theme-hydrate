@@ -19,7 +19,6 @@ const Wrapper = styled('div')`
   flex: 1;
   color: ${get('colors.text')};
   background: ${get('colors.background')};
-  font-size: 18px;
   min-width: 0;
 `
 
@@ -40,6 +39,15 @@ const fullContainerStyles = css`
 export const Container = styled('div')`
   box-sizing: border-box;
   margin: 0 auto;
+  & h1:first-child,
+  h2:first-child,
+  h3:first-child,
+  h4:first-child,
+  h5:first-child,
+  h6:first-child {
+    margin-top: 0;
+    padding-top: 50px;
+  }
   ${p => p.theme.docz.mq(p.theme.docz.styles.container)};
   ${(p: HydratePageProps) => p.fullcontainer && fullContainerStyles}
 `

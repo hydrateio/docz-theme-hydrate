@@ -20,22 +20,12 @@ const Wrapper = styled('div')`
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 24px;
+  padding: 24px 36px;
 
   a,
   a:hover,
   a:visited {
     text-decoration: none;
-  }
-
-  &:before {
-    position: absolute;
-    content: '';
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: ${p => sidebarPrimary(p) || primaryColor(p)};
   }
 
   @media screen and (max-width: ${breakpoints.desktop}px) {
