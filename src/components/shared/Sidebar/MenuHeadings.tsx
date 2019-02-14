@@ -6,20 +6,27 @@ import get from 'lodash/get'
 
 import { get as themeGet } from '@utils/theme'
 
+const primaryColor = themeGet('colors.primary')
+
 const Submenu = styled('div')`
   display: flex;
   flex-direction: column;
-  margin: 5px 36px 0;
+  margin: 5px 0 0;
   position: relative;
 `
 
 const SmallLink = styled(Link)`
   position: relative;
   font-size: 14px;
-  padding: 0 0 5px;
+  font-weight: 400;
+  padding: 4px var(--sidebar-padding) 5px;
   text-decoration: none;
   opacity: 0.8;
   transition: opacity 0.2s;
+
+  &:first-line {
+    line-height: 22px;
+  }
 
   &,
   &:hover,
@@ -30,8 +37,25 @@ const SmallLink = styled(Link)`
   }
 
   &.active {
-    color: ${themeGet('colors.sidebarActive')};
+    font-weight: 600;
     opacity: 1;
+  }
+
+  &:before {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    content: '';
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 30px;
+    background: ${primaryColor};
+    transition: width 0.2s;
+  }
+
+  &.active:before {
+    width: 3px;
   }
 `
 

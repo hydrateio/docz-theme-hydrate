@@ -28,9 +28,9 @@ const Wrapper = styled('div')`
 export const linkStyle = ({ colors, isItem, level }: any) => css`
   position: relative;
   display: block;
-  padding: 4px 36px;
+  padding: 4px var(--sidebar-padding);
   font-weight: 400;
-  font-size: ${level > 0 ? 16 : 20}px;
+  font-size: 15px;
   letter-spacing: -0.02em;
   color: ${colors.sidebarText};
   text-decoration: none;
@@ -42,21 +42,57 @@ export const linkStyle = ({ colors, isItem, level }: any) => css`
     color: ${colors.sidebarText};
   }
 
-  &.active {
-    color: ${colors.sidebarActive};
+  &:first-line {
+    line-height: 22px;
+  }
+
+  &.active:not(.no-highlight) {
+    font-weight: bold;
+
+    &:before {
+      z-index: 1;
+      position: absolute;
+      display: block;
+      content: '';
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 30px;
+      background: ${colors.primary};
+      transition: width 0.2s;
+    }
+
+    &.active:before {
+      width: 3px;
+    }
   }
 `
 
 const LinkAnchor = styled('a')`
   ${p => linkStyle(p.theme.docz)};
   font-size: 14px;
+  ${p =>
+    !!p.icon &&
+    css`
+      padding-right: 44px;
+      position: relative;
+      &:after {
+        content: url(${p.icon});
+        position: absolute;
+        top: calc(50% - 10px);
+        right: 20px;
+        height: 16px;
+        width: 16px;
+        vertical-align: -4px;
+      }
+    `}
 `
 
 export const getActiveFromClass = (el: HTMLElement | null) =>
   Boolean(el && el.classList.contains('active'))
 
 interface LinkProps {
-  item: Menu | Entry,
+  item: Menu | Entry
   onClick?: React.MouseEventHandler<any>
   className?: string
   innerRef?: (node: any) => void
@@ -91,7 +127,16 @@ export class MenuLink extends Component<LinkProps, LinkState> {
 
   public render(): React.ReactNode {
     const { active } = this.state
-    const { item, children, onClick, innerRef, isItem, onMouseEnter, onMouseLeave, level } = this.props
+    const {
+      item,
+      children,
+      onClick,
+      innerRef,
+      isItem,
+      onMouseEnter,
+      onMouseLeave,
+      level,
+    } = this.props
 
     const commonProps = (config: any) => ({
       children,
@@ -104,19 +149,24 @@ export class MenuLink extends Component<LinkProps, LinkState> {
     })
 
     return (
-      <Wrapper active={active} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <Wrapper
+        active={active}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        level={level}
+      >
         <ThemeConfig>
           {config => {
             const route: any = item.route === '/' ? '/' : item.route
             const props = { ...commonProps(config) }
 
             if (item.type === 'external-link') {
-              return <LinkAnchor {...props} href={item.href} />
+              return <LinkAnchor {...props} icon={item.icon} href={item.href} />
             }
 
             if (item.route) {
               if (location.hash) {
-                props.activeClassName = ''
+                props.activeClassName = 'active no-highlight'
               }
               return <Link {...props} to={route} />
             }
@@ -124,7 +174,7 @@ export class MenuLink extends Component<LinkProps, LinkState> {
             return <LinkAnchor {...props} href="#" />
           }}
         </ThemeConfig>
-        {item.route && <MenuHeadings route={item.route} />}
+        {active && item.route && <MenuHeadings route={item.route} />}
       </Wrapper>
     )
   }

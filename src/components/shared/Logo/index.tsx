@@ -20,7 +20,7 @@ const Wrapper = styled('div')`
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 24px 36px;
+  padding: 9px 20px;
 
   a,
   a:hover,

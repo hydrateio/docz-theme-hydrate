@@ -9,9 +9,9 @@ import { get } from '@utils/theme'
 
 interface SubMenuProps {
   hovered?: boolean
-  menuPosition?: { top: number, left: number }
-  onMouseEnter?: (ev: React.SyntheticEvent<any>) => void,
-  onMouseLeave?: (ev: React.SyntheticEvent<any>) => void,
+  menuPosition?: { top: number; left: number }
+  onMouseEnter?: (ev: React.SyntheticEvent<any>) => void
+  onMouseLeave?: (ev: React.SyntheticEvent<any>) => void
   show: boolean
 }
 
@@ -30,7 +30,7 @@ interface WrapperProps {
 const sidebarBg = get('colors.sidebarBg')
 
 const Wrapper = styled('div')`
-  position: ${(p: WrapperProps) => p.show ? 'static' : 'fixed'};
+  position: ${(p: WrapperProps) => (p.show ? 'static' : 'fixed')};
   z-index: 999;
 `
 
@@ -40,15 +40,28 @@ const List = styled('dl')`
   overflow-y: auto;
   visibility: ${(p: OpenedProps) => (p.opened ? 'visible' : 'hidden')};
   max-height: ${(p: OpenedProps) => (p.opened ? 'none' : '0px')};
-  box-shadow: ${(p: OpenedProps) => p.level > 0 && !p.show ? '4px 4px 8px 0px rgba(120,120,120,0.3)' : 'none'};
+  box-shadow: ${(p: OpenedProps) =>
+    p.level > 0 && !p.show ? '4px 4px 8px 0px rgba(120,120,120,0.3)' : 'none'};
 `
 
 export const SubMenu = (props: SubMenuProps & MenuProps) => {
-  const { collapseAll, hovered, item, level, levels, menuPosition, onMouseEnter, onMouseLeave, show, sidebarToggle, isDesktop } = props;
+  const {
+    collapseAll,
+    hovered,
+    item,
+    level,
+    levels,
+    menuPosition,
+    onMouseEnter,
+    onMouseLeave,
+    show,
+    sidebarToggle,
+    isDesktop,
+  } = props
 
   const mouseEvents = {
     onMouseEnter,
-    onMouseLeave
+    onMouseLeave,
   }
 
   const menuItems = new Array().concat(item.items, item.menus)
@@ -60,7 +73,8 @@ export const SubMenu = (props: SubMenuProps & MenuProps) => {
     <Wrapper
       {...hovered && { ...mouseEvents }}
       show={show}
-      style={{ ...(menuPosition || {}) }}>
+      style={{ ...(menuPosition || {}) }}
+    >
       <List opened={hovered || show} show={show} level={level}>
         {menuItems &&
           menuItems.map((item: Entry) => {
