@@ -8,6 +8,7 @@ import styled, { css } from 'react-emotion'
 import { ButtonLink } from './Button'
 import { GithubLink, Sidebar, Main } from '../shared'
 import { get } from '@utils/theme'
+import { Search } from '../shared/Search'
 
 type HydratePageProps = PageProps & {
   doc: {
@@ -39,16 +40,9 @@ const fullContainerStyles = css`
 export const Container = styled('div')`
   box-sizing: border-box;
   margin: 0 auto;
-  & h1:first-child,
-  h2:first-child,
-  h3:first-child,
-  h4:first-child,
-  h5:first-child,
-  h6:first-child {
-    margin-top: 0;
-    padding-top: 50px;
+  & h1:first-of-type {
+    margin: -40px -40px 0;
   }
-  ${p => p.theme.docz.mq(p.theme.docz.styles.container)};
   ${(p: HydratePageProps) => p.fullcontainer && fullContainerStyles}
 `
 
@@ -89,6 +83,22 @@ const EditIcon = styled(Edit)`
   margin-right: 5px;
 `
 
+const Content = styled('div')`
+  margin: 40px;
+`
+
+const SearchWrapper = styled.div`
+  background: #fff;
+  padding: 42px 36px 30px;
+  & > div {
+    width: 50%;
+    ${p =>
+      p.theme.docz.mq({
+        display: ['none', 'none', 'none', 'block'],
+      })};
+  }
+`
+
 export const Page: SFC<HydratePageProps> = ({
   children,
   doc: { link, fullpage, fullcontainer, edit = true, source },
@@ -114,7 +124,12 @@ export const Page: SFC<HydratePageProps> = ({
             {fullpage ? (
               content
             ) : (
-              <Container fullcontainer={fullcontainer}>{content}</Container>
+              <Container fullcontainer={fullcontainer}>
+                <SearchWrapper>
+                  <Search />
+                </SearchWrapper>
+                <Content>{content}</Content>
+              </Container>
             )}
           </Wrapper>
         </Main>

@@ -71,24 +71,14 @@ const ToggleButton = styled('button')`
   padding: 5px 6px;
   width: 33px;
   height: 30px;
-  top: ${(p: OpenProps) => (p.opened ? '3px' : '2px')};
+  top: ${(p: OpenProps) => (p.opened ? '-12px' : '-13px')};
   right: ${(p: OpenProps) => (p.opened ? '-39px' : '-27px')};
   transform: translateX(${translateX}) translateY(${translateY});
   transition: transform 0.3s;
   outline: none;
   border: none;
-  background: ${p => (p.opened ? sidebarBg(p) : backgroundColor(p))};
+  background: ${p => sidebarBg(p)};
   border-radius: ${p => (p.opened ? `0 0 ${radii(p)} 0` : `${radii(p)}`)};
-
-  &:before {
-    position: absolute;
-    content: '';
-    top: -3px;
-    left: 0;
-    width: calc(100% + 1px);
-    height: ${(p: OpenProps) => (p.opened ? '3px' : 0)};
-    background: ${p => sidebarPrimary(p) || primaryColor(p)};
-  }
 
   ${p =>
     p.theme.docz.mq({

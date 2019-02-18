@@ -3,6 +3,9 @@
   "version": "1.4.0",
   "description": "Hydrate theme for docz",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/hydrateio/docz-plugin-storybook.git"
+  },
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",
   "module": "dist/index.m.js",
@@ -68,6 +71,7 @@
     "filemanager-webpack-plugin": "^2.0.5",
     "husky": "^1.2.0",
     "lint-staged": "^8.1.0",
+    "npm-run-all": "^4.1.5",
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "^1.1.0",
     "ts-loader": "^5.3.0",

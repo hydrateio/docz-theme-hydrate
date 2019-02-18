@@ -22,8 +22,35 @@ const Wrapper = styled('div')`
   background-color: ${sidebarBg};
   display: flex;
   flex-direction: column;
-  width: ${(p: WrapperProps) => p.level === 0 ? '280px' : 'auto'};
-  min-width: ${(p: WrapperProps) => p.level === 0 ? '280px' : '0'};
+  width: ${(p: WrapperProps) =>
+    p.level === 0 ? 'var(--sidebar-width)' : 'auto'};
+  min-width: ${(p: WrapperProps) =>
+    p.level === 0 ? 'var(--sidebar-width)' : '0'};
+  margin-bottom: ${p => (p.level > 0 ? 0 : 36)}px;
+`
+
+const iconRotate = (p: OpenedProps) => (p.opened ? '-180deg' : '0deg')
+
+const Icon = styled('div')`
+  position: absolute;
+  pointer-events: none;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%) rotate(${iconRotate});
+  transform-origin: 50% 50%;
+  transition: transform 0.3s;
+  height: 1rem;
+  width: 1rem;
+
+  & svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1rem;
+    width: 1rem;
+    stroke: ${get('colors.sidebarText')};
+    stroke-width: 2px;
+  }
 `
 
 export interface MenuProps {
@@ -39,7 +66,7 @@ export interface MenuState {
   opened: boolean
   hasActive: boolean
   hovered: boolean
-  menuPosition: { top: number, left: number } | undefined
+  menuPosition: { top: number; left: number } | undefined
 }
 
 export class Menu extends Component<MenuProps, MenuState> {
@@ -48,7 +75,7 @@ export class Menu extends Component<MenuProps, MenuState> {
     opened: false,
     hasActive: false,
     hovered: false,
-    menuPosition: undefined
+    menuPosition: undefined,
   }
   public timer: number | null
 
@@ -66,7 +93,8 @@ export class Menu extends Component<MenuProps, MenuState> {
     const { item, collapseAll, level, isDesktop } = this.props
 
     const hover = this.state.hovered
-    const show = true // collapseAll || this.state.opened
+    const show = collapseAll || this.state.opened
+    const hasHeadings = Boolean(item.headings && item.headings.length > 0)
     const hasItems = Boolean(item.items && item.items.length > 0)
     const hasMenus = Boolean(item.menus && item.menus.length > 0)
     const hasChildren = hasItems || hasMenus
@@ -79,7 +107,7 @@ export class Menu extends Component<MenuProps, MenuState> {
 
     const mouseEvents = {
       onMouseEnter: this.menuLinkMouseEnter,
-      onMouseLeave: this.onMouseLeave
+      onMouseLeave: this.onMouseLeave,
     }
 
     return (
@@ -89,16 +117,23 @@ export class Menu extends Component<MenuProps, MenuState> {
         level={level}
         innerRef={(node: any) => {
           this.menu = node
-        }}>
+        }}
+      >
         <MenuLink
           item={item}
-          {...(!show && isDesktop) && { ...mouseEvents }}
+          {...!show && isDesktop && { ...mouseEvents }}
           {...hasToggle && { onClick: handleToggle }}
-          level={level}>
+          level={level}
+        >
           {item.name}
+          {(hasChildren || hasHeadings) && (
+            <Icon opened={show}>
+              <ChevronDown size={15} />
+            </Icon>
+          )}
         </MenuLink>
         {hasChildren && <SubMenu show={show} {...this.props} />}
-        {(hasChildren && !show && hover && level > 0) && (
+        {hasChildren && !show && hover && level > 0 && (
           <Portal>
             <SubMenu
               show={show}
@@ -107,7 +142,7 @@ export class Menu extends Component<MenuProps, MenuState> {
               menuPosition={this.state.menuPosition}
               {...isDesktop && {
                 onMouseEnter: this.subMenuMouseEnter,
-                onMouseLeave: this.onMouseLeave
+                onMouseLeave: this.onMouseLeave,
               }}
             />
           </Portal>
@@ -135,7 +170,7 @@ export class Menu extends Component<MenuProps, MenuState> {
   private menuLinkMouseEnter = (e: React.SyntheticEvent<any>): void => {
     e.stopPropagation()
     const { top, right } = e.currentTarget.getBoundingClientRect()
-    const menuPosition = { top, left: right };
+    const menuPosition = { top, left: right }
 
     this.setState({ hovered: true, menuPosition })
     this.clearTimer()

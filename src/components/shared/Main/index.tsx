@@ -4,11 +4,11 @@ import { injectGlobal } from 'emotion'
 import styled from 'react-emotion'
 import get from 'lodash/get'
 import { get as themeGet } from '@utils/theme'
+import { SearchCtxProvider } from '../Search/SearchContext'
 
 const primaryColor = themeGet('colors.primary')
 
 const Wrapper = styled('div')`
-  --color-bar-height: calc(30rem / 16);
   display: flex;
   flex-wrap: wrap;
   max-width: 100vw;
@@ -32,6 +32,11 @@ interface MainProps {
 
 const base = (body: any) =>
   injectGlobal`
+    :root {
+      --color-bar-height: calc(30rem / 16);
+      --sidebar-width: 260px;
+      --sidebar-padding: 20px;
+    }
     html {
       font-size: 16px;
     }
@@ -53,7 +58,11 @@ export class Main extends Component<MainProps> {
   }
 
   public render(): React.ReactNode {
-    return <Wrapper>{this.props.children}</Wrapper>
+    return (
+      <SearchCtxProvider>
+        <Wrapper>{this.props.children}</Wrapper>
+      </SearchCtxProvider>
+    )
   }
 
   private getBody(props: MainProps): any {
