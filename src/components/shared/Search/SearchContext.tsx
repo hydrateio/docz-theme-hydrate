@@ -21,16 +21,11 @@ class Provider extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
-      menus: [],
+      menus: getMenusFromDocs(props.docs),
       searching: false,
       setMenus: this.setMenus,
       setSearching: this.setSearching,
     }
-  }
-
-  public componentDidMount(): void {
-    const initial = getMenusFromDocs(this.props.docs)
-    this.setMenus(initial)
   }
 
   public render(): React.ReactNode {
