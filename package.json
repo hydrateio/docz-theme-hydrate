@@ -4,7 +4,7 @@
   "description": "Hydrate theme for docz",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/hydrateio/docz-plugin-storybook.git"
+    "url": "https://github.com/hydrateio/docz-theme-hydrate.git"
   },
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",
