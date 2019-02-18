@@ -3,7 +3,7 @@ import './styles/global'
 
 import * as React from 'react'
 import { theme, DocPreview, ThemeConfig } from 'docz'
-import { ThemeProvider } from 'emotion-theming'
+import { ThemeProvider, withTheme } from 'emotion-theming'
 import webfont from 'webfontloader'
 
 import { config } from './config'
@@ -75,4 +75,8 @@ const transform = ({ mode, codemirrorTheme, ...config }: any) => {
   }
 }
 
+const Render = ({ children, ...rest }) => children(rest)
+const WithTheme = withTheme(Render)
+
 export default theme(config, transform)(Theme)
+export { withTheme, WithTheme }
