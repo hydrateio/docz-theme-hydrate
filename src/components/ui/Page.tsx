@@ -87,6 +87,18 @@ const Content = styled('div')`
   margin: 40px;
 `
 
+const SearchWrapper = styled.div`
+  background: #fff;
+  padding: 42px 36px 30px;
+  & > div {
+    width: 50%;
+    ${p =>
+      p.theme.docz.mq({
+        display: ['none', 'none', 'none', 'block'],
+      })};
+  }
+`
+
 export const Page: SFC<HydratePageProps> = ({
   children,
   doc: { link, fullpage, fullcontainer, edit = true, source },
@@ -113,7 +125,9 @@ export const Page: SFC<HydratePageProps> = ({
               content
             ) : (
               <Container fullcontainer={fullcontainer}>
-                <Search />
+                <SearchWrapper>
+                  <Search />
+                </SearchWrapper>
                 <Content>{content}</Content>
               </Container>
             )}

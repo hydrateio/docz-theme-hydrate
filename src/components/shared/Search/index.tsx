@@ -23,7 +23,6 @@ const Wrapper = styled('div')`
   background-color: #fff;
   display: flex;
   align-items: center;
-  padding: 42px 36px 30px;
   opacity: 1;
 `
 
@@ -39,8 +38,13 @@ const Field = styled('div')`
   border-radius: 4px;
   display: flex;
   align-items: center;
-  flex-basis: 50%;
+
   padding-right: 10px;
+
+  ${p =>
+    p.theme.docz.mq({
+      flexBasis: ['100%', '100%', '100%', '50%'],
+    })};
 `
 
 const Input = styled('input')`
@@ -56,6 +60,13 @@ const Input = styled('input')`
   ${p =>
     placeholder({
       color: rgba(sidebarText(p), 0.5),
+    })};
+
+  ${p =>
+    p.theme.docz.mq({
+      paddingTop: ['6px', '6px', '15px'],
+      paddingBottom: ['6px', '6px', '15px'],
+      paddingLeft: ['6px', '6px', '20px'],
     })};
 `
 type SidebarProps = SearchContextType

@@ -8,6 +8,7 @@ import { SearchCtxConsumer } from '../Search/SearchContext'
 import { Menu } from './Menu'
 import { Hamburguer } from './Hamburguer'
 import { Title } from './Title'
+import { Search } from '../Search'
 
 import { get } from '@utils/theme'
 import { mq, breakpoints } from '@styles/responsive'
@@ -22,6 +23,7 @@ const sidebarText = get('colors.sidebarText')
 const sidebarBorder = get('colors.sidebarBorder')
 
 const Wrapper = styled('div')`
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.05);
   position: relative;
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
@@ -99,6 +101,15 @@ const ToggleBackground = styled('div')`
   z-index: 1;
 `
 
+const SearchWrapper = styled.div`
+  padding: 0 var(--sidebar-padding);
+  margin-bottom: 36px;
+  ${p =>
+    p.theme.docz.mq({
+      display: ['block', 'block', 'block', 'none'],
+    })};
+`
+
 interface SidebarState {
   hidden: boolean
 }
@@ -144,6 +155,9 @@ class SidebarBase extends Component<SidebarProps, SidebarState> {
                   onClick={this.handleSidebarToggle}
                 />
                 <Title />
+                <SearchWrapper>
+                  <Search />
+                </SearchWrapper>
 
                 {menus.length === 0 ? (
                   <Empty>No documents found.</Empty>

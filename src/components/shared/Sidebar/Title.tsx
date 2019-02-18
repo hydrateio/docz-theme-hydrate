@@ -11,8 +11,16 @@ const Text = styled('h1')`
   font-size: 21px;
   font-weight: bold;
   line-height: 1.38;
-  padding: var(--sidebar-padding) var(--sidebar-padding) 30px;
+  margin: 0;
+  padding-left: var(--sidebar-padding);
+  padding-right: var(--sidebar-padding);
   width: 70%;
+
+  ${p =>
+    p.theme.docz.mq({
+      paddingTop: ['0', '0', '20px'],
+      paddingBottom: ['10px', '10px', '30px'],
+    })};
 `
 
 export const Title = () => (
