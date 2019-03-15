@@ -2,7 +2,8 @@ import * as React from 'react'
 import { SFC, ReactNode } from 'react'
 import { ThemeConfig } from 'docz'
 import BaseTooltip from 'rc-tooltip'
-import styled, { css } from 'react-emotion'
+import styled from '@emotion/styled'
+import { css } from 'emotion'
 
 import { get } from '@utils/theme'
 

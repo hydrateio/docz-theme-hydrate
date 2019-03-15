@@ -1,25 +1,29 @@
 {
   "env": {
     "production": {
-      "plugins": [
+      "presets": [
         [
-          "emotion",
+          "@emotion/babel-preset-css-prop",
           {
             "hoist": true
           }
-        ],
+        ]
+      ],
+      "plugins": [
         "lodash"
       ]
     },
     "development": {
-      "plugins": [
+      "presets": [
         [
-          "emotion",
+        "@emotion/babel-preset-css-prop",
           {
             "sourceMap": true,
             "autoLabel": true
           }
-        ],
+        ]
+      ],
+      "plugins": [
         "lodash"
       ]
     }

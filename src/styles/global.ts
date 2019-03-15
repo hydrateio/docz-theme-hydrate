@@ -1,8 +1,8 @@
-import { injectGlobal } from 'emotion'
+import { css } from '@emotion/core'
 import 'codemirror/lib/codemirror.css'
 
 // tslint:disable
-injectGlobal`
+export const globalStyle = css`
   .icon-link {
     display: none;
   }

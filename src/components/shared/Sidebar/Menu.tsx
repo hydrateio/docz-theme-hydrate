@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Component } from 'react'
 import ChevronDown from 'react-feather/dist/icons/chevron-down'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import { Entry } from 'docz'
 import { Portal } from 'react-portal'
 

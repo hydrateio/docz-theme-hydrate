@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { SFC, ComponentType } from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const BaseButton = styled('button')`
   cursor: pointer;

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { SFC } from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 import { get } from '@utils/theme'
 
@@ -40,17 +40,17 @@ const IconLine = styled('span')`
   background: ${p => (p.opened ? sidebarText(p) : textColor(p))};
   transition: transform 0.3s, opacity 0.3s;
 
-  &:nth-child(1) {
+  &:nth-of-type(1) {
     top: -2px;
     transform: translateY(${IconFirst}) rotate(${IconRotate});
   }
 
-  &:nth-child(2) {
+  &:nth-of-type(2) {
     top: 6px;
     opacity: ${IconMiddle};
   }
 
-  &:nth-child(3) {
+  &:nth-of-type(3) {
     top: 14px;
     transform: translateY(${IconLast}) rotate(-${IconRotate});
   }

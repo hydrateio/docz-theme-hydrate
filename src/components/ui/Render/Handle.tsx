@@ -1,7 +1,7 @@
 import lighten from 'polished/lib/color/lighten'
 import darken from 'polished/lib/color/darken'
-import styled, { css } from 'react-emotion'
-
+import styled from '@emotion/styled'
+import { css } from 'emotion'
 import { get } from '@utils/theme'
 
 export const HANDLE_SIZE = '20px'

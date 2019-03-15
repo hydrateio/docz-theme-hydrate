@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { SFC, Component } from 'react'
 import { ThemeConfig } from 'docz'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import rgba from 'polished/lib/color/rgba'
 import BaseCheck from 'react-feather/dist/icons/check'
 import Clipboard from 'react-feather/dist/icons/clipboard'
@@ -15,7 +15,7 @@ import { ButtonLink } from '../Button'
 import * as themes from '@styles/codemirror'
 import { get } from '@utils/theme'
 
-import './ps-scrollbar'
+import { PsScrollbar } from './ps-scrollbar'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/jsx/jsx'
@@ -231,6 +231,8 @@ export class Editor extends Component<EditorProps, EditorState> {
 
     return (
       <Wrapper className={className}>
+        <PsScrollbar />
+
         <ThemeConfig>
           {config => (
             <Scrollbar option={scrollbarOpts}>
