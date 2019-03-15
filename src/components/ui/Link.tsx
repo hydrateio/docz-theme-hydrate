@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { SFC } from 'react'
+import { FC, forwardRef } from 'react'
 import styled from '@emotion/styled'
 import { Link as BaseLink } from 'docz'
 
@@ -20,13 +20,14 @@ export const LinkStyled = styled('a')`
 
 type LinkProps = React.AnchorHTMLAttributes<any>
 
-export const Link: SFC<LinkProps> = ({ href, ...props }) => {
+const StyledBaseLink = LinkStyled.withComponent(BaseLink)
+
+export const Link: FC<LinkProps> = ({ href, innerRef, ...props }) => {
   const isInternal = href && href.startsWith('/')
-  const Component = isInternal ? LinkStyled.withComponent(BaseLink) : LinkStyled
 
   return isInternal ? (
-    <Component {...props} to={href} />
+    <StyledBaseLink ref={innerRef} {...props} to={href} />
   ) : (
-    <Component {...props} href={href} />
+    <LinkStyled ref={innerRef} {...props} href={href} />
   )
 }

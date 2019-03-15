@@ -115,7 +115,7 @@ export class Menu extends Component<MenuProps, MenuState> {
         hasMenus={hasMenus}
         opened={show}
         level={level}
-        innerRef={(node: any) => {
+        ref={(node: any) => {
           this.menu = node
         }}
       >

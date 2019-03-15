@@ -96,7 +96,6 @@ interface LinkProps {
   item: Menu | Entry
   onClick?: React.MouseEventHandler<any>
   className?: string
-  innerRef?: (node: any) => void
   isItem?: boolean
   onMouseEnter?: (ev: React.SyntheticEvent<any>) => void
   onMouseLeave?: (ev: React.SyntheticEvent<any>) => void
@@ -132,7 +131,6 @@ export class MenuLink extends Component<LinkProps, LinkState> {
       item,
       children,
       onClick,
-      innerRef,
       isItem,
       onMouseEnter,
       onMouseLeave,
@@ -143,8 +141,7 @@ export class MenuLink extends Component<LinkProps, LinkState> {
       children,
       onClick,
       className: linkStyle({ ...config.themeConfig, isItem, level }),
-      innerRef: (node: any) => {
-        innerRef && innerRef(node)
+      ref: (node: any) => {
         this.$el = node
       },
     })
@@ -159,20 +156,20 @@ export class MenuLink extends Component<LinkProps, LinkState> {
         <ThemeConfig>
           {config => {
             const route: any = item.route === '/' ? '/' : item.route
-            const props = { ...commonProps(config) }
+            const { ref, ...props } = { ...commonProps(config) }
 
             if (item.type === 'external-link') {
-              return <LinkAnchor {...props} icon={item.icon} href={item.href} />
+              return <LinkAnchor ref={ref} {...props} icon={item.icon} href={item.href} />
             }
 
             if (item.route) {
               if (location.hash) {
                 props.activeClassName = 'active no-highlight'
               }
-              return <Link {...props} to={route} />
+              return <Link innerRef={ref} {...props} to={route} />
             }
 
-            return <LinkAnchor {...props} href="#" />
+            return <LinkAnchor ref={ref} {...props} href="#" />
           }}
         </ThemeConfig>
         {active && item.route && <MenuHeadings route={item.route} />}
