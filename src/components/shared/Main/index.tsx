@@ -2,6 +2,7 @@ import * as React from 'react'
 import { FC } from 'react'
 import styled from '@emotion/styled'
 import { Global, css } from '@emotion/core'
+
 import get from 'lodash/get'
 import { get as themeGet } from '@utils/theme'
 import { SearchCtxProvider } from '../Search/SearchContext'

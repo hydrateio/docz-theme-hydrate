@@ -4,7 +4,7 @@ import { PageProps, ThemeConfig } from 'docz'
 import lighten from 'polished/lib/color/lighten'
 import Edit from 'react-feather/dist/icons/edit-2'
 import styled from '@emotion/styled'
-import { css } from '@emotion/core'
+import { css } from 'emotion'
 
 import { ButtonLink } from './Button'
 import { GithubLink, Sidebar, Main } from '../shared'

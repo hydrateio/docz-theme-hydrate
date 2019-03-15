@@ -3,7 +3,7 @@ import { SFC, ReactNode } from 'react'
 import { ThemeConfig } from 'docz'
 import BaseTooltip from 'rc-tooltip'
 import styled from '@emotion/styled'
-import { css } from '@emotion/core'
+import { css } from 'emotion'
 
 import { get } from '@utils/theme'
 

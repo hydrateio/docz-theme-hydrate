@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Component } from 'react'
 import { Link, Entry, ThemeConfig } from 'docz'
 import styled from '@emotion/styled'
-import { css } from '@emotion/core'
+import { css } from 'emotion'
 
 import { MenuHeadings } from './MenuHeadings'
 import { Menu } from '@utils/getMenusFromDocs'
