@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Component } from 'react'
 import withSizes from 'react-sizes'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 import { Logo } from '../Logo'
 import { SearchCtxConsumer } from '../Search/SearchContext'

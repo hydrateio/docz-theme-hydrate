@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, ThemeConfig } from 'docz'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 import { get } from '@utils/theme'
 

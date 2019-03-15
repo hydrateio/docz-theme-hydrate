@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Component } from 'react'
-import { injectGlobal } from 'emotion'
-import styled from 'react-emotion'
+import { FC } from 'react'
+import styled from '@emotion/styled'
+import { Global, css } from '@emotion/core'
 import get from 'lodash/get'
 import { get as themeGet } from '@utils/theme'
 import { SearchCtxProvider } from '../Search/SearchContext'
@@ -30,42 +30,25 @@ interface MainProps {
   config: any
 }
 
-const base = (body: any) =>
-  injectGlobal`
-    :root {
-      --color-bar-height: calc(30rem / 16);
-      --sidebar-width: 260px;
-      --sidebar-padding: 20px;
-    }
-    html {
-      font-size: 16px;
-    }
-    body {
-      ${body};
-    }
-  `
-
-export class Main extends Component<MainProps> {
-  public componentDidUpdate(prevProps: MainProps): void {
-    const body = this.getBody(this.props)
-    const prevBody = this.getBody(prevProps)
-
-    if (body && prevBody !== body) base(body)
+const base = (body: any) => css`
+  :root {
+    --color-bar-height: calc(30rem / 16);
+    --sidebar-width: 260px;
+    --sidebar-padding: 20px;
   }
-
-  public componentDidMount(): void {
-    base(this.getBody(this.props))
+  html {
+    font-size: 16px;
   }
-
-  public render(): React.ReactNode {
-    return (
-      <SearchCtxProvider>
-        <Wrapper>{this.props.children}</Wrapper>
-      </SearchCtxProvider>
-    )
+  body {
+    ${body};
   }
+`
 
-  private getBody(props: MainProps): any {
-    return get(props, 'config.themeConfig.styles.body')
-  }
-}
+export const Main: FC<MainProps> = props => (
+  <SearchCtxProvider>
+    <Wrapper>
+      <Global styles={base(get(props, 'config.themeConfig.styles.body'))} />
+      {props.children}
+    </Wrapper>
+  </SearchCtxProvider>
+)

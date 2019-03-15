@@ -1,9 +1,10 @@
 import 'rc-tooltip/assets/bootstrap.css'
-import './styles/global'
+import { globalStyle } from './styles/global'
 
 import * as React from 'react'
 import { theme, DocPreview, ThemeConfig } from 'docz'
 import { ThemeProvider, withTheme } from 'emotion-theming'
+import { Global } from '@emotion/core'
 import webfont from 'webfontloader'
 
 import { config } from './config'
@@ -21,6 +22,7 @@ const Theme = () => (
   <ThemeConfig>
     {config => (
       <ThemeProvider theme={mergeTheme(config)}>
+        <Global styles={() => globalStyle} />
         <DocPreview
           components={{
             page: components.Page,
