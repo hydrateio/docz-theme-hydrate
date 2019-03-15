@@ -46,7 +46,7 @@ const base = (body: any) => css`
 `
 
 export const Main: FC<MainProps> = props => (
-  <SearchCtxProvider>
+  <SearchCtxProvider menuConfig={props.config.menu}>
     <Wrapper>
       <Global styles={base(get(props, 'config.themeConfig.styles.body'))} />
       {props.children}

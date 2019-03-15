@@ -4,10 +4,12 @@ import { getMenusFromDocs, Menus } from '../../../utils/getMenusFromDocs'
 
 interface Props {
   docs: DocsRenderProps['docs']
+  menuConfig: string[]
 }
 
 export interface SearchContext {
   menus: Menus | []
+  menuConfig: string[]
   searching: boolean
   setSearching: (arg0: boolean) => void
   setMenus: (arg0: Menus) => void
@@ -20,8 +22,10 @@ const SearchContext = React.createContext<State | null>(null)
 class Provider extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
+
     this.state = {
-      menus: getMenusFromDocs(props.docs),
+      menus: getMenusFromDocs(props.docs, props.menuConfig),
+      menuConfig: props.menuConfig,
       searching: false,
       setMenus: this.setMenus,
       setSearching: this.setSearching,

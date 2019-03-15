@@ -43,7 +43,7 @@ const sortByOrder = (a: Menu, b: Menu) => {
   return 0
 }
 
-const getMenusFromDocs = (docs: Entry[]): Menus => {
+const getMenusFromDocs = (docs: Entry[], menuConfig: string[]): Menus => {
   const uniqueMenus: { [key: string]: Menu } = {}
   const delimiter = '__'
   const rootItems: Entry[] = []
@@ -148,6 +148,12 @@ const getMenusFromDocs = (docs: Entry[]): Menus => {
   }))
 
   const menuArray = new Array().concat(menus, rootItems)
+
+  // sort by menuConfig from doczrc.js if it exists. Fallback to alphabetical ordering
+  // if no custom menu order is provided
+  if (Array.isArray(menuConfig)) {
+    return menuConfig.map(x => menuArray.find(item => item.name === x)).filter(Boolean);
+  }
 
   sort(menuArray, sortByOrder, 'name')
 

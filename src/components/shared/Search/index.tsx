@@ -84,7 +84,7 @@ class SearchInput extends Component<SidebarProps, SidebarState> {
     return (
       <Docs>
         {({ docs }) => {
-          const initial = getMenusFromDocs(docs)
+          const initial = getMenusFromDocs(docs, this.props.menuConfig)
           const menus = this.props.menus || initial
 
           return (
